@@ -104,37 +104,40 @@
   <div class="home-section">
     <div class="single-section-box home-profile-information">
       <div class="profile-header">
-        <img src="https://avatars.githubusercontent.com/u/122465228?v=4" alt="Profile Picture" class="profile-avatar">
-        <h2 class="profile-name">Mandarin0016</h2>
+        <img th:src="${#strings.isEmpty(user.profilePicture) ? 'https://e7.pngegg.com/pngimages/799/987/png-clipart-computer-icons-avatar-icon-design-avatar-heroes-computer-wallpaper-thumbnail.png' : user.profilePicture}" alt="Profile Picture" class="profile-avatar">
+        <h2 class="profile-name" th:text="${user.username}">Mandarin0016</h2>
         <div class="profile-status-role-container">
-          <p class="active-profile">ACTIVE</p>
+          <p th:if="${user.isActive()}" class="active-profile">ACTIVE</p>
+          <p th:if="${!user.isActive()}" class="inactive-profile">INACTIVE</p>
         </div>
         <div class="details-section">
           <div class="details-section-container">
             <strong>User id: </strong>
-            <p>55b23a12-71a1-4ccd-918d-08b2b09409b0</p>
+            <p th:text="${user.id}">default user id</p>
           </div>
         </div>
       </div>
       <div class="profile-info">
         <div class="details-section-container">
           <strong>Username: </strong>
-          <p>ivan123</p>
+          <p th:text="${user.username}">ivan123</p>
         </div>
         <div class="details-section-container">
           <strong>Email: </strong>
-          <p>abv@bg</p>
+          <p th:text="${#strings.isEmpty(user.email) ? 'Edit your profile and add your email' : user.email}">abv@bg</p>
         </div>
         <div class="details-section-container">
           <strong>Joined: </strong>
-          <p>09 Dec 2024 21:39</p>
+          <p th:text="${#temporals.format(user.createdOn, 'dd MMM YYYY HH:mm')}">09 Dec 2024 21:39</p>
         </div>
         <div class="details-section-container">
           <strong>Country: </strong>
-          <p>Bulgaria</p>
+          <p th:text="${user.country}">Bulgaria</p>
         </div>
       </div>
-      <a href="/users/profile" class="profile-actions-button">
+      <!--   /users/{id}/profile   -->
+      <!--   '/users/' + ${user.id} + '/profile'  -> '/users/aa4e1e5c-720d-48cd-b188-654d7c3d9aed/profile'   -->
+      <a th:href="@{'/users/' + ${user.id} + '/profile'}" class="profile-actions-button">
         <p>Edit Profile</p>
         <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
           <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 4h4m0 0v4m0-4-5 5M8 20H4m0 0v-4m0 4 5-5"></path>
@@ -142,13 +145,15 @@
       </a>
     </div>
 
+    <!-- First wallet created for this user    -->
     <div class="single-section-box home-standard-wallet">
       <div class="default-label-box">
         <p>Standard Wallet</p>
-        <p class="active-wallet-status">ACTIVE</p>
+        <p th:if="${user.wallets[0].status.name() == 'ACTIVE'}" class="active-wallet-status">ACTIVE</p>
+        <p th:if="${user.wallets[0].status.name() == 'INACTIVE'}" class="inactive-wallet-status">INACTIVE</p>
       </div>
       <div class="wallet-balance">
-        <p class="balance">18.07 EUR</p>
+        <p class="balance" th:text="${user.wallets[0].balance + ' EUR'}">18.07 EUR</p>
         <p class="available-balance-text">Available Balance</p>
       </div>
 
@@ -163,17 +168,17 @@
       <div class="details-section">
         <div class="details-section-container">
           <strong>Wallet id: </strong>
-          <p>dccacda6-12d3-422c-8ad0-23992ef55a1b</p>
+          <p th:text="${user.wallets[0].id}" >dccacda6-12d3-422c-8ad0-23992ef55a1b</p>
         </div>
         <div class="details-section-container">
           <strong>Last transaction on: </strong>
-          <p>11 Dec 2024 21:32</p>
+          <p th:text="${#temporals.format(user.wallets[0].updatedOn, 'dd MMM YYYY HH:mm')}">11 Dec 2024 21:32</p>
         </div>
       </div>
     </div>
     <div class="single-section-box home-subscription">
       <div class="default-label-box">
-        <p>ULTIMATE SUBSCRIPTION</p>
+        <p th:text="${user.subscriptions[0].type + ' SUBSCRIPTION'}">ULTIMATE SUBSCRIPTION</p>
       </div>
       <table class="styled-table">
         <thead>
@@ -186,10 +191,12 @@
         </thead>
         <tbody>
         <tr>
-          <td><span class="status active">ACTIVE</span></td>
-          <td>Monthly</td>
-          <td>49.99 EUR</td>
-          <td>Automatic</td>
+          <td th:if="${user.subscriptions[0].status.name() == 'ACTIVE'}"><span class="status active">ACTIVE</span></td>
+          <td th:if="${user.subscriptions[0].status.name() == 'COMPLETED'}"><span class="status completed">COMPLETED</span></td>
+          <td th:if="${user.subscriptions[0].status.name() == 'TERMINATED'}"><span class="status terminated">TERMINATED</span></td>
+          <td th:text="${user.subscriptions[0].period}">Monthly</td>
+          <td th:text="${user.subscriptions[0].price + ' EUR'}">49.99 EUR</td>
+          <td th:text="${user.subscriptions[0].renewalAllowed ? 'Automatic' : 'No'}">Automatic</td>
         </tr>
         </tbody>
       </table>
@@ -202,11 +209,11 @@
       <div class="details-section">
         <div class="details-section-container">
           <strong>Subscription id: </strong>
-          <p>126af97e-46af-4596-900e-1609c4769c90</p>
+          <p th:text="${user.subscriptions[0].id}">126af97e-46af-4596-900e-1609c4769c90</p>
         </div>
         <div class="details-section-container">
           <strong>Subscribe until: </strong>
-          <p>11 Jan 2025 21:29</p>
+          <p th:text="${#temporals.format(user.subscriptions[0].expiryOn, 'dd MMM YYYY HH:mm')}">11 Jan 2025 21:29</p>
         </div>
       </div>
     </div>
