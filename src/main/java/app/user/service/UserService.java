@@ -54,16 +54,16 @@ public class UserService {
     @Transactional
     public void register(RegisterRequest registerRequest) {
 
-        Optional<User> optionalUser = userRepository.findByUsername(registerRequest.username());
+        Optional<User> optionalUser = userRepository.findByUsername(registerRequest.getUsername());
         if (optionalUser.isPresent()) {
-            throw new RuntimeException("User with [%s] username already exist.".formatted(registerRequest.username()));
+            throw new RuntimeException("User with [%s] username already exist.".formatted(registerRequest.getUsername()));
         }
 
         User user = User.builder()
-                .username(registerRequest.username())
-                .password(passwordEncoder.encode(registerRequest.password()))
+                .username(registerRequest.getUsername())
+                .password(passwordEncoder.encode(registerRequest.getPassword()))
                 .role(UserRole.USER)
-                .country(registerRequest.country())
+                .country(registerRequest.getCountry())
                 .active(true)
                 .createdOn(LocalDateTime.now())
                 .updatedOn(LocalDateTime.now())
@@ -73,7 +73,7 @@ public class UserService {
         walletService.createDefaultWallet(user);
         subscriptionService.createDefaultSubscription(user);
 
-        log.info("New user profile was registered in the system for user [%s].".formatted(registerRequest.username()));
+        log.info("New user profile was registered in the system for user [%s].".formatted(registerRequest.getUsername()));
     }
 
     public List<User> getAll() {
