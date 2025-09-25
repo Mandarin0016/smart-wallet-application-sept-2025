@@ -75,7 +75,7 @@ public class WalletService {
         );
     }
 
-    public void createDefaultWallet(User user) {
+    public Wallet createDefaultWallet(User user) {
 
         Wallet wallet = Wallet.builder()
                 .owner(user)
@@ -86,7 +86,7 @@ public class WalletService {
                 .updatedOn(LocalDateTime.now())
                 .build();
 
-        walletRepository.save(wallet);
+        return walletRepository.save(wallet);
     }
 
     private Wallet getById(UUID walletId) {

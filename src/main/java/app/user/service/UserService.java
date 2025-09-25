@@ -1,9 +1,11 @@
 package app.user.service;
 
+import app.subscription.model.Subscription;
 import app.subscription.service.SubscriptionService;
 import app.user.model.User;
 import app.user.model.UserRole;
 import app.user.repository.UserRepository;
+import app.wallet.model.Wallet;
 import app.wallet.service.WalletService;
 import app.web.dto.LoginRequest;
 import app.web.dto.RegisterRequest;
@@ -52,7 +54,7 @@ public class UserService {
     }
 
     @Transactional
-    public void register(RegisterRequest registerRequest) {
+    public User register(RegisterRequest registerRequest) {
 
         Optional<User> optionalUser = userRepository.findByUsername(registerRequest.getUsername());
         if (optionalUser.isPresent()) {
@@ -70,10 +72,15 @@ public class UserService {
                 .build();
 
         user = userRepository.save(user);
-        walletService.createDefaultWallet(user);
-        subscriptionService.createDefaultSubscription(user);
+        Wallet defaultWallet = walletService.createDefaultWallet(user);
+        Subscription defaultSubscription = subscriptionService.createDefaultSubscription(user);
+
+        user.setWallets(List.of(defaultWallet));
+        user.setSubscriptions(List.of(defaultSubscription));
 
         log.info("New user profile was registered in the system for user [%s].".formatted(registerRequest.getUsername()));
+
+        return user;
     }
 
     public List<User> getAll() {

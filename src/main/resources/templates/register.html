@@ -23,21 +23,21 @@
       </a>
     </div>
 
-    <form class="form" action="/register" method="post">
+    <form class="form" th:action="@{/register}" th:method="POST" th:object="${registerRequest}">
 
       <h3>Register Here</h3>
 
       <label for="username">Username</label>
-      <input type="text" placeholder="Username" id="username">
+      <input type="text" placeholder="Username" id="username" th:field="*{username}">
+      <p class="alert-warning" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Error message</p>
 
       <label for="password">Password</label>
-      <input type="password" placeholder="Password" id="password">
+      <input type="password" placeholder="Password" id="password" th:field="*{password}">
+      <p class="alert-warning" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Error message</p>
 
       <label for="country">Country</label>
-      <select id="country">
-        <option value="BULGARIA">BULGARIA</option>
-        <option value="GERMANY">GERMANY</option>
-        <option value="FRANCE">FRANCE</option>
+      <select id="country" th:field="*{country}">
+        <option th:each="country : ${T(app.user.model.Country).values()}" th:value="${country}" th:text="${country.getDisplayName()}">abv</option>
       </select>
 
       <button>Register</button>
@@ -46,6 +46,6 @@
 
   </section>
 </main>
-<div class="footer"><p>© 2025 Smart Wallet. All rights reserved.</p></div>
+<th:block th:insert="fragments/my-fragments :: my-website-footer"></th:block>
 </body>
 </html>
