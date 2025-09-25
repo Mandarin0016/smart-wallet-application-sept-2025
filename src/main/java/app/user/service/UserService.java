@@ -37,12 +37,12 @@ public class UserService {
 
     public User login(LoginRequest loginRequest) {
 
-        Optional<User> optionalUser = userRepository.findByUsername(loginRequest.username());
+        Optional<User> optionalUser = userRepository.findByUsername(loginRequest.getUsername());
         if (optionalUser.isEmpty()) {
             throw new RuntimeException("Incorrect username or password.");
         }
 
-        String rawPassword = loginRequest.password();
+        String rawPassword = loginRequest.getPassword();
         String hashedPassword = optionalUser.get().getPassword();
         if (!passwordEncoder.matches(rawPassword, hashedPassword)) {
             throw new RuntimeException("Incorrect username or password.");
