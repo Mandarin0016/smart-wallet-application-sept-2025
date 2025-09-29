@@ -3,6 +3,7 @@ package app.web;
 import app.user.model.User;
 import app.user.property.UserProperties;
 import app.user.service.UserService;
+import app.web.dto.LoginRequest;
 import app.web.dto.RegisterRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +32,25 @@ public class IndexController {
     }
 
     @GetMapping("/login")
-    public String getLoginPage() {
+    public ModelAndView getLoginPage() {
 
-        return "login";
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("login");
+        modelAndView.addObject("loginRequest", new LoginRequest());
+
+        return modelAndView;
+    }
+
+    @PostMapping("/login")
+    public ModelAndView login(@Valid LoginRequest loginRequest, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()){
+            return new ModelAndView("login");
+        }
+
+        userService.login(loginRequest);
+
+        return new ModelAndView("redirect:/home");
     }
 
     // Form Handling steps:
@@ -67,7 +84,7 @@ public class IndexController {
 
         userService.register(registerRequest);
 
-        return new ModelAndView("redirect:/home");
+        return new ModelAndView("redirect:/login");
     }
 
     @GetMapping("/home")
