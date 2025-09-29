@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Currency;
+import java.util.UUID;
 
 @Service
 public class TransactionService {
@@ -20,6 +21,11 @@ public class TransactionService {
     @Autowired
     public TransactionService(TransactionRepository transactionRepository) {
         this.transactionRepository = transactionRepository;
+    }
+
+    public Transaction upsert(Transaction transaction) {
+
+        return transactionRepository.save(transaction);
     }
 
     public Transaction createNewTransaction(User owner, String sender, String receiver, BigDecimal amount, BigDecimal balanceLeft, Currency currency, TransactionType type, TransactionStatus status, String description, String failureReason) {
@@ -39,5 +45,10 @@ public class TransactionService {
                 .build();
 
         return transactionRepository.save(transaction);
+    }
+
+    public Transaction getById(UUID transactionId) {
+
+        return transactionRepository.findById(transactionId).orElseThrow(() -> new RuntimeException("Transaction not found"));
     }
 }
