@@ -115,3 +115,16 @@ p.alert-warning {
   -webkit-text-fill-color: transparent;
   margin: 5px 0 0;
 }
+
+p.succeeded-message {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  background: linear-gradient(to left, #a1f88e, #67f569, #3bf55a);
+  background-size: 200%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 5px 0 0;
+}

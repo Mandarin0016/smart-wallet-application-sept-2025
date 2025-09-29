@@ -3,6 +3,7 @@ package app.web;
 import app.user.model.User;
 import app.user.property.UserProperties;
 import app.user.service.UserService;
+import app.web.dto.LoginRequest;
 import app.web.dto.RegisterRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.Map;
 
 @Controller
 public class IndexController {
@@ -31,9 +35,25 @@ public class IndexController {
     }
 
     @GetMapping("/login")
-    public String getLoginPage() {
+    public ModelAndView getLoginPage() {
 
-        return "login";
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("login");
+        modelAndView.addObject("loginRequest", new LoginRequest());
+
+        return modelAndView;
+    }
+
+    @PostMapping("/login")
+    public ModelAndView login(@Valid LoginRequest loginRequest, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return new ModelAndView("login");
+        }
+
+        userService.login(loginRequest);
+
+        return new ModelAndView("redirect:/home");
     }
 
     // Form Handling steps:
@@ -59,15 +79,16 @@ public class IndexController {
     // After POST, PUT, PATCH, DELETE requests we do "redirect:/endpoint"
     // Redirect = tells the client where to send the GET request
     @PostMapping("/register")
-    public ModelAndView register(@Valid RegisterRequest registerRequest, BindingResult bindingResult) {
+    public ModelAndView register(@Valid RegisterRequest registerRequest, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
 
         if (bindingResult.hasErrors()) {
             return new ModelAndView("register");
         }
 
         userService.register(registerRequest);
+        redirectAttributes.addFlashAttribute("successfulRegistration", "You have registered successfully");
 
-        return new ModelAndView("redirect:/home");
+        return new ModelAndView("redirect:/login");
     }
 
     @GetMapping("/home")

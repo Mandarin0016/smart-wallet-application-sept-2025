@@ -118,19 +118,23 @@
         </div>
       </div>
 
-      <form class="form">
+      <form class="form" th:action="@{'/users/' + ${user.id} + '/profile'}" th:method="PUT" th:object="${editProfileRequest}">
 
         <label for="firstName">First Name</label>
-        <input type="text" id="firstName" placeholder="First Name">
+        <input type="text" id="firstName" placeholder="First Name" th:field="*{firstName}">
+        <p class="alert-warning" th:if="${#fields.hasErrors('firstName')}">Invalid first name</p>
 
         <label for="lastName">Last Name</label>
-        <input type="text" id="lastName" placeholder="Last Name">
+        <input type="text" id="lastName" placeholder="Last Name" th:field="*{lastName}">
+        <p class="alert-warning" th:if="${#fields.hasErrors('lastName')}">Invalid last name</p>
 
         <label for="email">Email</label>
-        <input type="text" id="email" placeholder="Email Address">
+        <input type="text" id="email" placeholder="Email Address" th:field="*{email}">
+        <p class="alert-warning" th:if="${#fields.hasErrors('email')}">Invalid email format</p>
 
         <label for="profilePicture">Profile Picture URL</label>
-        <input type="text" id="profilePicture" placeholder="Image Link">
+        <input type="text" id="profilePicture" placeholder="Image Link" th:field="*{profilePictureUrl}">
+        <p class="alert-warning" th:if="${#fields.hasErrors('profilePictureUrl')}">Invalid URL format</p>
 
         <button class="profile-actions-button">
           <p>Save</p>
@@ -138,7 +142,6 @@
             <path d="M20 6L9 17L4 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
           </svg>
         </button>
-
       </form>
     </div>
   </div>

@@ -23,15 +23,22 @@
       </a>
     </div>
 
-    <form class="form">
+    <!-- Steps to handle form submission:   -->
+    <!-- 1. Form action (request endpoint)  -->
+    <!-- 2. Request method (http method)  -->
+    <!-- 3. Fill the object/dto  -->
+    <form class="form" th:action="@{/login}" th:method="POST" th:object="${loginRequest}">
 
       <h3>Login Here</h3>
 
+      <p class="succeeded-message" th:text="${successfulRegistration}"></p>
       <label for="username">Username</label>
-      <input type="text" placeholder="Username" id="username">
+      <input type="text" placeholder="Username" id="username" th:field="*{username}">
+      <p class="alert-warning" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Invalid username</p>
 
       <label for="password">Password</label>
-      <input type="password" placeholder="Password" id="password">
+      <input type="password" placeholder="Password" id="password" th:field="*{password}">
+      <p class="alert-warning" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Invalid password</p>
 
       <button type="submit">Log In</button>
 
