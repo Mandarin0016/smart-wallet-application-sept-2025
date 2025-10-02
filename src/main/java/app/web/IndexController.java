@@ -5,16 +5,21 @@ import app.user.property.UserProperties;
 import app.user.service.UserService;
 import app.web.dto.LoginRequest;
 import app.web.dto.RegisterRequest;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Map;
+import java.util.UUID;
 
 @Controller
 public class IndexController {
@@ -44,15 +49,16 @@ public class IndexController {
         return modelAndView;
     }
 
+    // Autowire HttpSession = automatically create user session, generate session id and return Set-Cookie header with the session id
     @PostMapping("/login")
-    public ModelAndView login(@Valid LoginRequest loginRequest, BindingResult bindingResult) {
+    public ModelAndView login(@Valid LoginRequest loginRequest, BindingResult bindingResult, HttpSession session) {
 
         if (bindingResult.hasErrors()) {
             return new ModelAndView("login");
         }
 
-        userService.login(loginRequest);
-
+        User user = userService.login(loginRequest);
+        session.setAttribute("userId", user.getId());
         return new ModelAndView("redirect:/home");
     }
 
@@ -92,9 +98,10 @@ public class IndexController {
     }
 
     @GetMapping("/home")
-    public ModelAndView getHomePage() {
+    public ModelAndView getHomePage(HttpSession session) {
 
-        User user = userService.getByUsername(userProperties.getDefaultUser().getUsername());
+        UUID userId = (UUID) session.getAttribute("userId");
+        User user = userService.getById(userId);
 
         ModelAndView modelAndView = new ModelAndView();
 
@@ -102,5 +109,12 @@ public class IndexController {
         modelAndView.addObject("user", user);
 
         return modelAndView;
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+
+        session.invalidate();
+        return "redirect:/";
     }
 }
