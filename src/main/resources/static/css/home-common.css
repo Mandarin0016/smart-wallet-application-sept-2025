@@ -81,6 +81,18 @@ div.single-section-box {
   text-transform: uppercase;
 }
 
+.profile-status-role-container .user-role-box {
+  background-color: #bef2ff;
+  color: #2889c6;  letter-spacing: 0.03em;
+  border: 1px solid rgba(103, 220, 255, 0.6);
+  box-shadow: 0 4px 8px rgba(103, 232, 255, 0.2);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
 .hover-colorful-button:hover {
   background: radial-gradient(circle at 90% top, #746ab0 0%, #6a61a4 10%, #605899 20%, #56508d 30%, #4c477f 40%, #423f73 50%, #383666 60%, #2e2d5a 70%, #24244d 80%, #1a1a41 90%, #101035 100%);
   color: white;

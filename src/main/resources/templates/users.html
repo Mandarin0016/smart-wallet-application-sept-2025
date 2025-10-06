@@ -137,6 +137,7 @@
           <th>Status</th>
           <th>Created on</th>
           <th>Switch status</th>
+          <th>Switch role</th>
         </tr>
         </thead>
         <tbody>
@@ -152,7 +153,19 @@
           </td>
           <td th:text="${#temporals.format(user.createdOn, 'dd MMM YYYY HH:mm')}">11 Dec 2024 21:09</td>
           <td>
-            <form action="/users/4531a4c8-87d0-4e47-a42a-532ec4e85451/status">
+<!--            /users/4531a4c8-87d0-4e47-a42a-532ec4e85451/status-->
+            <form th:action="@{'/users/' + ${user.id} + '/status'}" th:method="PATCH">
+              <button class="profile-actions-button">
+                <p>Switch</p>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                     class="bi bi-toggle-on" viewBox="0 0 16 16">
+                  <path d="M5 3a5 5 0 0 0 0 10h6a5 5 0 0 0 0-10zm6 9a4 4 0 1 1 0-8 4 4 0 0 1 0 8"></path>
+                </svg>
+              </button>
+            </form>
+          </td>
+          <td>
+            <form th:action="@{'/users/' + ${user.id} + '/role'}" th:method="PATCH">
               <button class="profile-actions-button">
                 <p>Switch</p>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"

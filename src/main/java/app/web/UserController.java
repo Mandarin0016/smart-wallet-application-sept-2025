@@ -4,14 +4,12 @@ import app.user.model.User;
 import app.user.service.UserService;
 import app.web.dto.DtoMapper;
 import app.web.dto.EditProfileRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
@@ -68,5 +66,21 @@ public class UserController {
         modelAndView.addObject("users", users);
 
         return modelAndView;
+    }
+
+    @PatchMapping("/{userId}/role")
+    public String switchUserRole(@PathVariable UUID userId) {
+
+        userService.switchRole(userId);
+
+        return "redirect:/users";
+    }
+
+    @PatchMapping("/{userId}/status")
+    public String switchUserStatus(@PathVariable UUID userId) {
+
+        userService.switchStatus(userId);
+
+        return "redirect:/users";
     }
 }

@@ -126,7 +126,7 @@
             <p th:if="${subscription.status.name() == 'COMPLETED'}" class="status completed">COMPLETED</p>
             <p th:if="${subscription.status.name() == 'TERMINATED'}" class="status terminated">TERMINATED</p>
           </td>
-          <td th:text="${subscription.period}">MONTHLY</td>
+          <td th:text="${subscription.period.getDisplayName()}">MONTHLY</td>
           <td th:text="${subscription.price}">49.99</td>
           <td th:text="${#temporals.format(subscription.createdOn, 'dd MMM YYYY HH:mm')}">11 Dec 2024</td>
           <td th:text="${#temporals.format(subscription.expiryOn, 'dd MMM YYYY HH:mm')}">11 Jan 2025</td>

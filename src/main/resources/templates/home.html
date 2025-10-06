@@ -109,6 +109,7 @@
         <div class="profile-status-role-container">
           <p th:if="${user.isActive()}" class="active-profile">ACTIVE</p>
           <p th:if="${!user.isActive()}" class="inactive-profile">INACTIVE</p>
+          <p th:text="${user.role}" class="user-role-box">USER_ROLE</p>
         </div>
         <div class="details-section">
           <div class="details-section-container">
@@ -219,6 +220,7 @@
     </div>
   </div>
 </main>
-<th:block th:insert="fragments/my-fragments :: my-website-footer"></th:block>
+<th:block th:if="${user.role.name() == 'ADMIN'}" th:insert="fragments/my-fragments :: my-website-admin-footer"></th:block>
+<th:block th:unless="${user.role.name() == 'ADMIN'}" th:insert="fragments/my-fragments :: my-website-footer"></th:block>
 </body>
 </html>

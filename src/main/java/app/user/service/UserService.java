@@ -119,4 +119,30 @@ public class UserService {
 
         userRepository.save(user);
     }
+
+    public void switchRole(UUID userId) {
+
+        User user = getById(userId);
+
+        if (user.getRole() == UserRole.USER) {
+            user.setRole(UserRole.ADMIN);
+        } else {
+            user.setRole(UserRole.USER);
+        }
+
+        user.setUpdatedOn(LocalDateTime.now());
+        userRepository.save(user);
+    }
+
+    public void switchStatus(UUID userId) {
+
+        User user = getById(userId);
+
+        // true -> false
+        // false -> true
+        user.setActive(!user.isActive());
+
+        user.setUpdatedOn(LocalDateTime.now());
+        userRepository.save(user);
+    }
 }
