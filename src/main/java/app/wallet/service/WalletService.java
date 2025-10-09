@@ -1,5 +1,8 @@
 package app.wallet.service;
 
+import app.email.EmailService;
+import app.event.SuccessfulChargeEvent;
+import app.gift.GiftService;
 import app.transaction.model.Transaction;
 import app.transaction.model.TransactionStatus;
 import app.transaction.model.TransactionType;
@@ -10,6 +13,8 @@ import app.wallet.model.WalletStatus;
 import app.wallet.repository.WalletRepository;
 import app.web.dto.TransferRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,10 +39,16 @@ public class WalletService {
     private final WalletRepository walletRepository;
     private final TransactionService transactionService;
 
+    private final ApplicationEventPublisher eventPublisher;
+
     @Autowired
-    public WalletService(WalletRepository walletRepository, TransactionService transactionService) {
+    public WalletService(WalletRepository walletRepository,
+                         TransactionService transactionService,
+                         ApplicationEventPublisher eventPublisher) {
+
         this.walletRepository = walletRepository;
         this.transactionService = transactionService;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional
@@ -70,6 +81,18 @@ public class WalletService {
             wallet.setBalance(wallet.getBalance().subtract(amount));
             wallet.setUpdatedOn(LocalDateTime.now());
             walletRepository.save(wallet);
+
+            String threadName = Thread.currentThread().getName();
+            System.out.println("Thread in WalletService.java: " + threadName);
+            // Event = Dto
+            SuccessfulChargeEvent event = SuccessfulChargeEvent.builder()
+                    .userId(user.getId())
+                    .walletId(walletId)
+                    .amount(amount)
+                    .email(user.getEmail())
+                    .createdOn(LocalDateTime.now())
+                    .build();
+            eventPublisher.publishEvent(event);
         }
 
         transaction.setBalanceLeft(wallet.getBalance());

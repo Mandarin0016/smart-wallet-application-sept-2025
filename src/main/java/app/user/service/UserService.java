@@ -14,6 +14,8 @@ import app.web.dto.RegisterRequest;
 import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,6 +61,7 @@ public class UserService {
     }
 
     @Transactional
+    @CacheEvict(value = "users", allEntries = true)
     public User register(RegisterRequest registerRequest) {
 
         Optional<User> optionalUser = userRepository.findByUsername(registerRequest.getUsername());
@@ -88,6 +91,7 @@ public class UserService {
         return user;
     }
 
+    @Cacheable("users")
     public List<User> getAll() {
 
         return userRepository.findAll();
@@ -108,6 +112,7 @@ public class UserService {
         return getByUsername(userProperties.getDefaultUser().getUsername());
     }
 
+    @CacheEvict(value = "users", allEntries = true)
     public void updateProfile(UUID id, EditProfileRequest editProfileRequest) {
 
         User user = getById(id);
@@ -120,6 +125,7 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @CacheEvict(value = "users", allEntries = true)
     public void switchRole(UUID userId) {
 
         User user = getById(userId);
@@ -134,6 +140,7 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @CacheEvict(value = "users", allEntries = true)
     public void switchStatus(UUID userId) {
 
         User user = getById(userId);
