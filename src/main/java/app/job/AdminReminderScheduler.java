@@ -4,7 +4,6 @@ import app.email.EmailService;
 import app.user.model.User;
 import app.user.model.UserRole;
 import app.user.service.UserService;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +21,7 @@ public class AdminReminderScheduler {
         this.emailService = emailService;
     }
 
-    @Scheduled(initialDelay = 10000, fixedRate = 5000)
+    @Scheduled(initialDelay = 10000000, fixedRate = 5000)
     public void sendReminderToAdmins() throws InterruptedException {
 
         List<User> admins = userService.getAll()
