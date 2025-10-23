@@ -1,5 +1,6 @@
 package app.user.service;
 
+import app.security.UserData;
 import app.subscription.model.Subscription;
 import app.subscription.service.SubscriptionService;
 import app.user.model.User;
@@ -16,6 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +31,7 @@ import java.util.UUID;
 
 @Slf4j
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -42,22 +46,6 @@ public class UserService {
         this.walletService = walletService;
         this.subscriptionService = subscriptionService;
         this.userProperties = userProperties;
-    }
-
-    public User login(LoginRequest loginRequest) {
-
-        Optional<User> optionalUser = userRepository.findByUsername(loginRequest.getUsername());
-        if (optionalUser.isEmpty()) {
-            throw new RuntimeException("Incorrect username or password.");
-        }
-
-        String rawPassword = loginRequest.getPassword();
-        String hashedPassword = optionalUser.get().getPassword();
-        if (!passwordEncoder.matches(rawPassword, hashedPassword)) {
-            throw new RuntimeException("Incorrect username or password.");
-        }
-
-        return optionalUser.get();
     }
 
     @Transactional
@@ -151,5 +139,17 @@ public class UserService {
 
         user.setUpdatedOn(LocalDateTime.now());
         userRepository.save(user);
+    }
+
+    // Всеки път при логин операция, Spring Security ще извиква този метод за да ни каже, че някой се опитва да се логне
+    // с това потребителко име (може и да е телефон, имейл, или каквото си решим)
+    // Цел на метода: да кажа на Spring Security кой е потребителя зад това потребителко име
+    // Return type: Метода очаква да върнет UserDetails обект, който има данните на този потребител
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("Username not found"));
+
+        return new UserData(user.getId(), username, user.getPassword(), user.getRole(),  user.isActive());
     }
 }

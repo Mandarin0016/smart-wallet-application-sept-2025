@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml"><head>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"><head>
   <meta charset="UTF-8">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
@@ -74,7 +74,7 @@
             </svg>
           </a>
         </div>
-        <div class="func-block admin-func-block">
+        <div class="func-block admin-func-block" sec:authorize="hasRole('ADMIN')">
           <span>Admin</span>
           <a href="/users">
             <p>Users</p>
