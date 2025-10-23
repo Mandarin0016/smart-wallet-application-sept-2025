@@ -1,9 +1,11 @@
 package app.web;
 
+import app.security.UserData;
 import app.transaction.model.Transaction;
 import app.transaction.service.TransactionService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,11 +27,10 @@ public class TransactionController {
     }
 
     @GetMapping
-    public ModelAndView getTransactionHistory(HttpSession session) {
+    public ModelAndView getTransactionHistory(@AuthenticationPrincipal UserData userData) {
 
-        UUID userId = (UUID) session.getAttribute("userId");
 
-        List<Transaction> allUserTransactions = transactionService.getAllByUserId(userId);
+        List<Transaction> allUserTransactions = transactionService.getAllByUserId(userData.getUserId());
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("transactions");

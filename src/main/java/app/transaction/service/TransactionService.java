@@ -5,6 +5,7 @@ import app.transaction.model.TransactionStatus;
 import app.transaction.model.TransactionType;
 import app.transaction.repository.TransactionRepository;
 import app.user.model.User;
+import app.wallet.model.Wallet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -56,5 +57,14 @@ public class TransactionService {
     public List<Transaction> getAllByUserId(UUID userId) {
 
         return transactionRepository.findAllByOwnerId(userId);
+    }
+
+    public List<Transaction> getLastFourTransactions(Wallet wallet) {
+
+        return transactionRepository.findAllBySenderOrReceiverOrderByCreatedOnDesc(wallet.getId().toString(), wallet.getId().toString())
+                .stream()
+                .filter(t -> t.getStatus() == TransactionStatus.SUCCEEDED)
+                .limit(4)
+                .toList();
     }
 }

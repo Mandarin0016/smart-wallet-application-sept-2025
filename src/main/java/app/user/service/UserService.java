@@ -12,6 +12,7 @@ import app.wallet.service.WalletService;
 import app.web.dto.EditProfileRequest;
 import app.web.dto.LoginRequest;
 import app.web.dto.RegisterRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -148,8 +151,14 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
+        ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        HttpSession currentSession = servletRequestAttributes.getRequest().getSession(true);
         User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("Username not found"));
 
-        return new UserData(user.getId(), username, user.getPassword(), user.getRole(),  user.isActive());
+        if (!user.isActive()) {
+            currentSession.setAttribute("inactiveUserMessage", "This account is blocked!");
+        }
+
+        return new UserData(user.getId(), username, user.getPassword(), user.getRole(), user.isActive());
     }
 }

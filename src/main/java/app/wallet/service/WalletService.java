@@ -1,27 +1,24 @@
 package app.wallet.service;
 
-import app.email.EmailService;
 import app.event.SuccessfulChargeEvent;
-import app.gift.GiftService;
 import app.transaction.model.Transaction;
 import app.transaction.model.TransactionStatus;
 import app.transaction.model.TransactionType;
 import app.transaction.service.TransactionService;
 import app.user.model.User;
+import app.utils.WalletUtils;
 import app.wallet.model.Wallet;
 import app.wallet.model.WalletStatus;
 import app.wallet.repository.WalletRepository;
 import app.web.dto.TransferRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Currency;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class WalletService {
@@ -32,6 +29,10 @@ public class WalletService {
     private static final String WALLET_NOT_OWNED_FAILURE_REASON = "You don't own this wallet";
     private static final String TOP_UP_DESCRIPTION_FORMAT = "Top-up %.2f";
     private static final String TRANSFER_DESCRIPTION_FORMAT = "Transfer %s <> %s (%.2f)";
+
+    private static final String FIRST_WALLET_NICKNAME = "Vault Zero";
+    private static final String SECOND_WALLET_NICKNAME = "Nova Flow";
+    private static final String THIRD_WALLET_NICKNAME = "Pulse Pay";
 
     private static final BigDecimal INITIAL_WALLET_BALANCE = new BigDecimal("20.00");
     private static final Currency DEFAULT_WALLET_CURRENCY = Currency.getInstance("EUR");
@@ -168,10 +169,12 @@ public class WalletService {
         Wallet wallet = Wallet.builder()
                 .owner(user)
                 .status(WalletStatus.ACTIVE)
+                .nickname(FIRST_WALLET_NICKNAME)
                 .balance(INITIAL_WALLET_BALANCE)
                 .currency(DEFAULT_WALLET_CURRENCY)
                 .createdOn(LocalDateTime.now())
                 .updatedOn(LocalDateTime.now())
+                .main(true)
                 .build();
 
         return walletRepository.save(wallet);
@@ -191,22 +194,101 @@ public class WalletService {
     public Transaction transfer(TransferRequest transferRequest) {
 
         Wallet senderWallet = getById(transferRequest.getWalletId());
-        Wallet receiverWallet = getFirstByUsername(transferRequest.getRecipientUsername());
+        Wallet receiverWallet = getPrimaryByUsername(transferRequest.getRecipientUsername());
 
         String transferDescription = TRANSFER_DESCRIPTION_FORMAT.formatted(senderWallet.getOwner().getUsername(), receiverWallet.getOwner().getUsername(), transferRequest.getAmount());
         Transaction withdrawalTransaction = withdrawal(senderWallet.getOwner(), senderWallet.getId(), transferRequest.getAmount(), transferDescription);
-        if (withdrawalTransaction.getStatus() == TransactionStatus.SUCCEEDED ) {
+        if (withdrawalTransaction.getStatus() == TransactionStatus.SUCCEEDED) {
             deposit(receiverWallet.getId(), transferRequest.getAmount(), transferDescription);
         }
 
         return withdrawalTransaction;
     }
 
-    private Wallet getFirstByUsername(String recipientUsername) {
+    private Wallet getPrimaryByUsername(String recipientUsername) {
 
         return walletRepository.findByOwnerUsername(recipientUsername).stream()
-                .filter(this::isActiveWallet)
+                .filter(Wallet::isMain)
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("[%s] doesn't have any active wallets.".formatted(recipientUsername)));
+                .orElseThrow(() -> new RuntimeException("[%s] doesn't have any primary wallets.".formatted(recipientUsername)));
+    }
+
+    @Transactional
+    public Transaction topUp(UUID walletId) {
+
+        BigDecimal amount = new BigDecimal("20.00");
+        return deposit(walletId, amount, TOP_UP_DESCRIPTION_FORMAT.formatted(amount));
+    }
+
+    public void changeStatus(UUID walletId) {
+
+        Wallet wallet = getById(walletId);
+
+        if (wallet.getStatus() == WalletStatus.ACTIVE) {
+            if (wallet.isMain()) {
+                throw new RuntimeException("Primary wallets can't be inactive!");
+            }
+            wallet.setStatus(WalletStatus.INACTIVE);
+        } else {
+            wallet.setStatus(WalletStatus.ACTIVE);
+        }
+
+        walletRepository.save(wallet);
+    }
+
+    @Transactional
+    public void promoteToPrimary(UUID walletId) {
+
+        Wallet wallet = getById(walletId);
+        if (wallet.isMain()) {
+            throw new RuntimeException("This wallet is already primary!");
+        }
+
+        User owner = wallet.getOwner();
+        Optional<Wallet> currentPrimaryWalletOpt = walletRepository.findByOwner_IdAndMain(owner.getId(), true);
+        if (currentPrimaryWalletOpt.isPresent()) {
+            Wallet currentPrimaryWallet = currentPrimaryWalletOpt.get();
+            currentPrimaryWallet.setMain(false);
+            currentPrimaryWallet.setUpdatedOn(LocalDateTime.now());
+            walletRepository.save(currentPrimaryWallet);
+        }
+
+        wallet.setMain(true);
+        wallet.setUpdatedOn(LocalDateTime.now());
+        walletRepository.save(wallet);
+    }
+
+    public void unlockNewWallet(User user) {
+
+        boolean isEligibleToUnlock = WalletUtils.isEligibleToUnlockNewWallet(user);
+        if (!isEligibleToUnlock) {
+            throw new RuntimeException("This user reached the max number of allowed wallets.");
+        }
+
+        Wallet newWallet = Wallet.builder()
+                .owner(user)
+                .status(WalletStatus.ACTIVE)
+                .nickname(user.getWallets().size() == 1 ? SECOND_WALLET_NICKNAME : THIRD_WALLET_NICKNAME)
+                .balance(BigDecimal.ZERO)
+                .currency(DEFAULT_WALLET_CURRENCY)
+                .createdOn(LocalDateTime.now())
+                .updatedOn(LocalDateTime.now())
+                .main(false)
+                .build();
+
+        walletRepository.save(newWallet);
+    }
+
+    public Map<UUID, List<Transaction>> getLastFourTransactions(List<Wallet> wallets) {
+
+        Map<UUID, List<Transaction>> transactionsByWalletId = new HashMap<>();
+
+        for (Wallet wallet : wallets) {
+
+            List<Transaction> lastFourTransactions = transactionService.getLastFourTransactions(wallet);
+            transactionsByWalletId.put(wallet.getId(), lastFourTransactions);
+        }
+
+        return transactionsByWalletId;
     }
 }

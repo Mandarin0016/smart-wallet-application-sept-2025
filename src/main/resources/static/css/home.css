@@ -241,6 +241,34 @@
   box-shadow: 0 4px 8px rgba(255, 103, 103, 0.2);
 }
 
+.default-label-box p.primary-label {
+  backdrop-filter: blur(8px);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  display: inline-block;
+  background: #746AB0FF;
+  color: #ffffff;
+  border: 1px solid transparent;
+}
+
+.default-label-box p.non-primary {
+  backdrop-filter: blur(8px);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  display: inline-block;
+  background: #707070;
+  color: #ffffff;
+  border: 1px solid transparent;
+}
+
 .wallet-balance {
   margin-bottom: 16px;
   padding: 20px 0;

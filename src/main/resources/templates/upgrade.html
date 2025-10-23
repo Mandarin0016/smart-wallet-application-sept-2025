@@ -157,14 +157,14 @@
         <p>0.00</p>
         <p>yearly price</p>
       </div>
-      <form class="form" action="/subscriptions?subscriptionType=DEFAULT" method="post" th:object="${upgradeRequest}">
+      <form class="form" th:action="@{'/subscriptions?subscriptionType=DEFAULT'}" th:method="POST" th:object="${upgradeRequest}">
         <label>Choose period</label>
         <select name="subscriptionPeriod" th:field="*{period}">
           <option th:each="period : ${T(app.subscription.model.SubscriptionPeriod).values()}" th:value="${period}" th:text="${period.getDisplayName()}">Monthly</option>
         </select>
         <label>Choose wallet to pay with</label>
         <select name="walletId" th:field="*{walletId}">
-          <option th:each="wallet : ${user.wallets}" th:value="${wallet.id}" th:text="${'Standard Wallet - ' + wallet.balance + ' ' + wallet.currency}">Standard Wallet - 36.03 EUR</option>
+          <option th:each="wallet : ${user.wallets}" th:value="${wallet.id}" th:text="${wallet.nickname + ' - ' + wallet.balance + ' ' + wallet.currency}">Standard Wallet - 36.03 EUR</option>
         </select>
         <!-- Buttons does not support th:field and th:value, so we can use name(pick the object field) value(the value to be bind to that field)-->
         <button th:unless="${user.subscriptions[0].type.name() == 'DEFAULT'}"  class="subscription-action-button" type="submit" name="subscriptionType" id="DEFAULT" value="DEFAULT">
@@ -213,14 +213,14 @@
         <p>199.99</p>
         <p>yearly price</p>
       </div>
-      <form class="form" action="/subscriptions?subscriptionType=PREMIUM" method="post" th:object="${upgradeRequest}">
+      <form class="form" th:action="@{'/subscriptions?subscriptionType=PREMIUM'}" th:method="POST" th:object="${upgradeRequest}">
         <label>Choose period</label>
         <select name="subscriptionPeriod" th:field="*{period}">
           <option th:each="period : ${T(app.subscription.model.SubscriptionPeriod).values()}" th:value="${period}" th:text="${period.getDisplayName()}">Monthly</option>
         </select>
         <label>Choose wallet to pay with</label>
         <select name="walletId" th:field="*{walletId}">
-          <option th:each="wallet : ${user.wallets}" th:value="${wallet.id}" th:text="${'Standard Wallet - ' + wallet.balance + ' ' + wallet.currency}">Standard Wallet - 36.03 EUR</option>
+          <option th:each="wallet : ${user.wallets}" th:value="${wallet.id}" th:text="${wallet.nickname + ' - ' + wallet.balance + ' ' + wallet.currency}">Standard Wallet - 36.03 EUR</option>
         </select>
         <button th:unless="${user.subscriptions[0].type.name() == 'PREMIUM'}" class="subscription-action-button" type="submit" name="subscriptionType" id="PREMIUM" value="PREMIUM">
           <p>Receive</p>
@@ -268,14 +268,14 @@
         <p>499.99</p>
         <p>yearly price</p>
       </div>
-      <form class="form" action="/subscriptions?subscriptionType=ULTIMATE" method="post" th:object="${upgradeRequest}">
+      <form class="form" th:action="@{'/subscriptions?subscriptionType=ULTIMATE'}" th:method="POST" th:object="${upgradeRequest}">
         <label>Choose period</label>
         <select name="subscriptionPeriod" th:field="*{period}">
           <option th:each="period : ${T(app.subscription.model.SubscriptionPeriod).values()}" th:value="${period}" th:text="${period.getDisplayName()}">Monthly</option>
         </select>
         <label>Choose wallet to pay with</label>
         <select name="walletId" th:field="*{walletId}">
-          <option th:each="wallet : ${user.wallets}" th:value="${wallet.id}" th:text="${'Standard Wallet - ' + wallet.balance  + ' ' + wallet.currency}">Standard Wallet - 36.03 EUR</option>
+          <option th:each="wallet : ${user.wallets}" th:value="${wallet.id}" th:text="${wallet.nickname + ' - ' + wallet.balance + ' ' + wallet.currency}">Standard Wallet - 36.03 EUR</option>
         </select>
         <button th:unless="${user.subscriptions[0].type.name() == 'ULTIMATE'}" class="subscription-action-button" type="submit" name="subscriptionType" id="PREMIUM" value="PREMIUM">
           <p>Receive</p>

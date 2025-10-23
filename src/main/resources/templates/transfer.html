@@ -106,12 +106,12 @@
 
         <h2>Transfer Funds</h2>
 
-        <form action="/transfers" method="post" class="transfer-form" th:object="${transferRequest}">
+        <form th:action="@{/transfers}" th:method="POST" class="transfer-form" th:object="${transferRequest}">
 
           <label for="walletId">Select Wallet</label>
           <select id="walletId" name="fromWalletId" required="" th:field="*{walletId}">
             <option value="" disabled="">Select your wallet</option>
-            <option th:each="wallet : ${user.wallets}" th:value="${wallet.id}" th:text="'Standard Wallet - ' + ${wallet.balance} + ' EUR'"></option>
+            <option th:each="wallet : ${user.wallets}" th:value="${wallet.id}" th:text="${wallet.nickname} + ' - ' + ${wallet.balance} + ' EUR'"></option>
           </select>
           <p class="alert-warning" th:if="${#fields.hasErrors('walletId')}">Invalid wallet</p>
 

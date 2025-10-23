@@ -149,12 +149,12 @@
     <!-- First wallet created for this user    -->
     <div class="single-section-box home-standard-wallet">
       <div class="default-label-box">
-        <p>Standard Wallet</p>
-        <p th:if="${user.wallets[0].status.name() == 'ACTIVE'}" class="active-wallet-status">ACTIVE</p>
-        <p th:if="${user.wallets[0].status.name() == 'INACTIVE'}" class="inactive-wallet-status">INACTIVE</p>
+        <p th:text="${primaryWallet.nickname}"></p>
+        <p th:if="${primaryWallet.status.name() == 'ACTIVE'}" class="active-wallet-status">ACTIVE</p>
+        <p th:if="${primaryWallet.status.name() == 'INACTIVE'}" class="inactive-wallet-status">INACTIVE</p>
       </div>
       <div class="wallet-balance">
-        <p class="balance" th:text="${user.wallets[0].balance + ' EUR'}">18.07 EUR</p>
+        <p class="balance" th:text="${primaryWallet.balance + ' EUR'}">18.07 EUR</p>
         <p class="available-balance-text">Available Balance</p>
       </div>
 
@@ -169,11 +169,11 @@
       <div class="details-section">
         <div class="details-section-container">
           <strong>Wallet id: </strong>
-          <p th:text="${user.wallets[0].id}" >dccacda6-12d3-422c-8ad0-23992ef55a1b</p>
+          <p th:text="${primaryWallet.id}" >dccacda6-12d3-422c-8ad0-23992ef55a1b</p>
         </div>
         <div class="details-section-container">
           <strong>Last transaction on: </strong>
-          <p th:text="${#temporals.format(user.wallets[0].updatedOn, 'dd MMM YYYY HH:mm')}">11 Dec 2024 21:32</p>
+          <p th:text="${#temporals.format(primaryWallet.updatedOn, 'dd MMM YYYY HH:mm')}">11 Dec 2024 21:32</p>
         </div>
       </div>
     </div>

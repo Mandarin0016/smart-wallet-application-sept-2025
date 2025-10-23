@@ -4,6 +4,7 @@ import app.security.UserData;
 import app.user.model.User;
 import app.user.property.UserProperties;
 import app.user.service.UserService;
+import app.wallet.model.Wallet;
 import app.web.dto.LoginRequest;
 import app.web.dto.RegisterRequest;
 import jakarta.servlet.http.Cookie;
@@ -11,7 +12,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -43,12 +46,19 @@ public class IndexController {
     }
 
     @GetMapping("/login")
-    public ModelAndView getLoginPage(@RequestParam(name = "loginAttemptMessage", required = false) String message) {
+    public ModelAndView getLoginPage(@RequestParam(name = "loginAttemptMessage", required = false) String message, @RequestParam(name = "error", required = false) String errorMessage, HttpSession session) {
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("login");
         modelAndView.addObject("loginRequest", new LoginRequest());
         modelAndView.addObject("loginAttemptMessage", message);
+        // ВАЖНО: Тези иф проверки не им е тук мястото, по-добре да се изнесат в UltilityClass
+        String inactiveUserMessage = (String) session.getAttribute("inactiveUserMessage");
+        if (inactiveUserMessage != null) {
+            modelAndView.addObject("inactiveAccountMessage", inactiveUserMessage);
+        } else if (errorMessage != null) {
+            modelAndView.addObject("errorMessage", "Invalid username or password");
+        }
 
         return modelAndView;
     }
@@ -97,6 +107,7 @@ public class IndexController {
 
         modelAndView.setViewName("home");
         modelAndView.addObject("user", user);
+        modelAndView.addObject("primaryWallet", user.getWallets().stream().filter(Wallet::isMain).findFirst().get());
 
         return modelAndView;
     }
