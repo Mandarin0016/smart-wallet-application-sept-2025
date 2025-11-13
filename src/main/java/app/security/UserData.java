@@ -23,6 +23,7 @@ public class UserData implements UserDetails {
     private String username;
     private String password;
     private UserRole role;
+    private String email;
 //    private List<String> permissions;
     private boolean isAccountActive;
 

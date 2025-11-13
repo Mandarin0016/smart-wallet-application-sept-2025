@@ -4,11 +4,11 @@ import app.notification.client.dto.Email;
 import app.notification.service.NotificationService;
 import app.security.UserData;
 import app.utils.EmailUtils;
+import app.web.dto.NotificationPreferenceState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
@@ -41,5 +41,29 @@ public class NotificationController {
         modelAndView.addObject("failedEmailsCount", EmailUtils.getFailedEmailsCount(userEmails));
 
         return modelAndView;
+    }
+
+    @PutMapping("/preference")
+    public String changeNotificationPreferenceState(@RequestParam("state") NotificationPreferenceState state, @AuthenticationPrincipal UserData user) {
+
+        notificationService.updatePreferenceState(state, user.getUserId(), user.getEmail());
+
+        return "redirect:/notifications";
+    }
+
+    @DeleteMapping
+    public String deleteAllEmails(@AuthenticationPrincipal UserData user) {
+
+        notificationService.deleteAllEmails(user.getUserId());
+
+        return "redirect:/notifications";
+    }
+
+    @PutMapping
+    public String retryFailedEmails(@AuthenticationPrincipal UserData user) {
+
+        notificationService.retryFailedEmails(user.getUserId());
+
+        return "redirect:/notifications";
     }
 }

@@ -28,6 +28,7 @@ public class UserController {
         this.userService = userService;
     }
 
+    // /users/Vik/profile
     // /users/{id}/profile
     @GetMapping("/{id}/profile")
     public ModelAndView getProfilePage(@PathVariable UUID id) {

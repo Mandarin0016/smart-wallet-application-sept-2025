@@ -1,20 +1,22 @@
 package app.notification.service;
 
+import app.exception.NotificationRetryFailedException;
 import app.notification.client.NotificationClient;
 import app.notification.client.dto.Email;
 import app.notification.client.dto.EmailRequest;
 import app.notification.client.dto.PreferenceResponse;
 import app.notification.client.dto.UpsertPreferenceRequest;
+import app.web.dto.NotificationPreferenceState;
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+
+import static app.web.dto.NotificationPreferenceState.OFF;
 
 @Slf4j
 @Service
@@ -34,7 +36,6 @@ public class NotificationService {
                 .notificationEnabled(notificationsEnabled)
                 .contactInfo(email)
                 .build();
-
 
         try {
             // Feign client - той може да изпраща HTTP заявка
@@ -81,6 +82,50 @@ public class NotificationService {
             client.sendEmail(dto);
         } catch (FeignException e) {
             log.error("[S2S Call]: Failed due to %s.".formatted(e.getMessage()));
+        }
+    }
+
+    public void updatePreferenceState(NotificationPreferenceState state, UUID userId, String email) {
+
+        UpsertPreferenceRequest dto = UpsertPreferenceRequest.builder()
+                .userId(userId)
+                .contactInfo(email)
+                .build();
+
+        if (state == OFF) {
+            dto.setNotificationEnabled(false);
+        } else {
+            dto.setNotificationEnabled(true);
+        }
+
+        try {
+            client.upsertPreference(dto);
+        } catch (FeignException e) {
+            log.error("[S2S Call]: Failed due to %s.".formatted(e.getMessage()));
+        }
+    }
+
+    public void deleteAllEmails(UUID userId) {
+
+        try {
+            client.deleteAllNotifications(userId);
+        } catch (FeignException e) {
+            log.error("[S2S Call]: Failed due to %s.".formatted(e.getMessage()));
+        }
+    }
+
+    public void retryFailedEmails(UUID userId) {
+
+        try {
+            client.retryFailed(userId);
+        } catch (FeignException e) {
+            log.error("[S2S Call]: Failed due to %s.".formatted(e.getMessage()));
+            // What is Feign ErrorDecoder and how to implement one?
+            if (e.status() == HttpStatus.FORBIDDEN.value()) {
+                throw new NotificationRetryFailedException("Failed to retry emails, try again later.");
+            } else {
+                throw new RuntimeException("notification-svc is down");
+            }
         }
     }
 }
