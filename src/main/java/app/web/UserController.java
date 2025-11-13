@@ -7,6 +7,7 @@ import app.web.dto.EditProfileRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -85,4 +86,13 @@ public class UserController {
 
         return "redirect:/users";
     }
+
+    // Този exception handler работи само за UserController
+    // local exception handling ahs higher priority compared to the global exception handling
+//    @ResponseStatus(HttpStatus.NOT_FOUND)
+//    @ExceptionHandler(Exception.class)
+//    public String handleException(Exception e) {
+//
+//        return "internal-server-error";
+//    }
 }

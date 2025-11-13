@@ -1,5 +1,7 @@
 package app.user.service;
 
+import app.exception.UserNotFoundException;
+import app.exception.UsernameAlreadyExistException;
 import app.notification.service.NotificationService;
 import app.security.UserData;
 import app.subscription.model.Subscription;
@@ -60,7 +62,7 @@ public class UserService implements UserDetailsService {
 
         Optional<User> optionalUser = userRepository.findByUsername(registerRequest.getUsername());
         if (optionalUser.isPresent()) {
-            throw new RuntimeException("User with [%s] username already exist.".formatted(registerRequest.getUsername()));
+            throw new UsernameAlreadyExistException("User with [%s] username already exist.".formatted(registerRequest.getUsername()));
         }
 
         User user = User.builder()
@@ -99,7 +101,7 @@ public class UserService implements UserDetailsService {
 
     public User getById(UUID id) {
 
-        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User with [%s] id does not exist.".formatted(id)));
+        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User with [%s] id does not exist.".formatted(id)));
     }
 
     public User getDefaultUser() {

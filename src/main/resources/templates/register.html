@@ -30,6 +30,7 @@
       <label for="username">Username</label>
       <input type="text" placeholder="Username" id="username" th:field="*{username}">
       <p class="alert-warning" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Error message</p>
+      <p class="alert-warning" th:if="${errorMessage}" th:text="${errorMessage}"></p>
 
       <label for="password">Password</label>
       <input type="password" placeholder="Password" id="password" th:field="*{password}">
