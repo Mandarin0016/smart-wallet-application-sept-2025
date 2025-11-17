@@ -24,11 +24,13 @@ public class AdminReminderScheduler {
     @Scheduled(initialDelay = 10000000, fixedRate = 5000)
     public void sendReminderToAdmins() throws InterruptedException {
 
+        // When return 2 users
         List<User> admins = userService.getAll()
                 .stream()
                 .filter(u -> u.getRole() == UserRole.ADMIN)
                 .toList();
 
+        // verify(emailService, times(2)).sendReminderEmail();
         admins.forEach(emailService::sendReminderEmail);
     }
 }

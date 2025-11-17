@@ -112,6 +112,11 @@ public class UserService implements UserDetailsService {
     @CacheEvict(value = "users", allEntries = true)
     public void updateProfile(UUID id, EditProfileRequest editProfileRequest) {
 
+        // 1. Ако няма потребител тогава се хвърля exception
+        // 2. Ако има потребител се обновяват данните му и се запазва обратно в базата
+        // 3. Ако има потребител и dto-то идва с имейл се извиква upsertPreference с true
+        // 4. Ако има потребител и dto-то идва с празен имейл се извиква upsertPreference с false
+
         User user = getById(id);
 
         if (editProfileRequest.getEmail() != null && !editProfileRequest.getEmail().isBlank()) {
@@ -128,6 +133,10 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
+    // Test method: switchRole(UUID userId)
+    // 1. Aко потребителя от базата е Admin, неговата роля става на User и се запазва отново в базата
+    // 2. Aко потребителя от базата е User, неговата роля става на Admin и се запазва отново в базата
+    // 3. Ако няма потребител - хвърля се грешка
     @CacheEvict(value = "users", allEntries = true)
     public void switchRole(UUID userId) {
 
