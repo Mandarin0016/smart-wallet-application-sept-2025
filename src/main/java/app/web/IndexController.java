@@ -1,6 +1,7 @@
 package app.web;
 
 import app.security.UserData;
+import app.user.model.Country;
 import app.user.model.User;
 import app.user.property.UserProperties;
 import app.user.service.UserService;
@@ -39,6 +40,10 @@ public class IndexController {
         this.userProperties = userProperties;
     }
 
+    // GET /
+    // Result:
+    // - status code 200 OK
+    // - view "index"
     @GetMapping("/")
     public String getIndexPage() {
 
@@ -85,6 +90,10 @@ public class IndexController {
 
     // After POST, PUT, PATCH, DELETE requests we do "redirect:/endpoint"
     // Redirect = tells the client where to send the GET request
+    // Result:
+    // - status code = 200 OK
+    // - redirect to /login\
+    // - verify(userService).register(any())
     @PostMapping("/register")
     public ModelAndView register(@Valid RegisterRequest registerRequest, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
 
@@ -98,6 +107,11 @@ public class IndexController {
         return new ModelAndView("redirect:/login");
     }
 
+    // GET /home
+    // Result:
+    // - status code 200
+    // - view name home
+    // - model attributes exists (user, primaryWallet)
     @GetMapping("/home")
     public ModelAndView getHomePage(@AuthenticationPrincipal UserData userData) {
 

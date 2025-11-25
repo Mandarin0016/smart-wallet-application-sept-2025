@@ -20,7 +20,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class SubscriptionService {
@@ -54,6 +56,11 @@ public class SubscriptionService {
 
         return subscriptionRepository.save(subscription);
     }
+
+    // wallet balance decreases
+    // transaction is successful
+    // currently active subscription is set to COMPLETED
+    // newly Active Subscription is created for this user
 
     public Transaction upgrade(User user, UpgradeRequest upgradeRequest, SubscriptionType subscriptionType) {
 
@@ -121,5 +128,10 @@ public class SubscriptionService {
         }
 
         throw new RuntimeException("Price not found for type [%s] and period [%s]".formatted(type, period));
+    }
+
+    public List<Subscription> getAllByOwnerId(UUID userId) {
+
+        return subscriptionRepository.findAllByOwner_Id(userId);
     }
 }

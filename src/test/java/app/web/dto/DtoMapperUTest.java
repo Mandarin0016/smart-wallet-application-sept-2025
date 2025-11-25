@@ -1,8 +1,6 @@
-package app.web;
+package app.web.dto;
 
 import app.user.model.User;
-import app.web.dto.DtoMapper;
-import app.web.dto.EditProfileRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;

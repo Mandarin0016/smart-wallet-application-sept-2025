@@ -38,6 +38,7 @@ public class GlobalControllerAdvice {
         return "redirect:/notifications";
     }
 
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler({
             NoResourceFoundException.class,
             AccessDeniedException.class
@@ -49,6 +50,7 @@ public class GlobalControllerAdvice {
         return modelAndView;
     }
 
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public ModelAndView handleLeftoverExceptions(Exception e) {
 

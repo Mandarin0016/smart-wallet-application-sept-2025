@@ -5,6 +5,7 @@ import app.subscription.model.SubscriptionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -12,4 +13,6 @@ import java.util.UUID;
 public interface SubscriptionRepository extends JpaRepository<Subscription, UUID> {
 
     Optional<Subscription> findByStatusAndOwnerId(SubscriptionStatus status, UUID ownerId);
+
+    List<Subscription> findAllByOwner_Id(UUID userId);
 }

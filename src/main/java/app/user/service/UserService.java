@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -45,15 +46,17 @@ public class UserService implements UserDetailsService {
     private final SubscriptionService subscriptionService;
     private final UserProperties userProperties;
     private final NotificationService notificationService;
+    private final String adminEmail;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, WalletService walletService, SubscriptionService subscriptionService, UserProperties userProperties, NotificationService notificationService) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, WalletService walletService, SubscriptionService subscriptionService, UserProperties userProperties, NotificationService notificationService, @Value("${users.defaultUser.username}") String adminEmail) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.walletService = walletService;
         this.subscriptionService = subscriptionService;
         this.userProperties = userProperties;
         this.notificationService = notificationService;
+        this.adminEmail = adminEmail;
     }
 
     @Transactional

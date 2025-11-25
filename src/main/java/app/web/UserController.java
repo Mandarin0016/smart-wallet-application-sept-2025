@@ -80,7 +80,20 @@ public class UserController {
         return "redirect:/users";
     }
 
+    // Scenario 1: User with Admin role
+    // PATCH /users/{userId}/status
+    // Result:
+    // - status code is 302 OK
+    // - redirect /users
+    // - verify switchStatus method of userService is invoked
+
+    // Scenario 2: User with User role
+    // PATCH /users/{userId}/status
+    // Result:
+    // - status code is 404
+    // - view name is "not-found"
     @PatchMapping("/{userId}/status")
+    @PreAuthorize("hasRole('ADMIN')")
     public String switchUserStatus(@PathVariable UUID userId) {
 
         userService.switchStatus(userId);
