@@ -1,5 +1,6 @@
 package app.web;
 
+import app.aspect.VeryImportant;
 import app.security.UserData;
 import app.transaction.model.Transaction;
 import app.transaction.service.TransactionService;
@@ -26,6 +27,7 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
+    @VeryImportant
     @GetMapping
     public ModelAndView getTransactionHistory(@AuthenticationPrincipal UserData userData) {
 
