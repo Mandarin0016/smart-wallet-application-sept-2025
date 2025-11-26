@@ -31,7 +31,8 @@ public class MyCustomAspect {
     @AfterReturning(value = "execution(* getById(..))", returning = "user")
     public void checkUserDetails(User user) {
 
-        user.setUsername("TEST_1234");
+        System.out.println("Hello user service!");
+//        user.setUsername("TEST_1234");
     }
 
     @AfterThrowing(value = "execution(* getById(..))", throwing = "exception")
@@ -39,14 +40,14 @@ public class MyCustomAspect {
 
         System.out.println(exception.getMessage());
     }
-
-    @Around("execution(* getById(..))")
-    public Object exampleAround(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-
-        System.out.println("before method invocation");
-        Object result = proceedingJoinPoint.proceed();
-        System.out.println("after method invocation");
-
-        return result;
-    }
+//
+//    @Around("execution(* getById(..))")
+//    public Object exampleAround(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+//
+//        System.out.println("before method invocation");
+//        Object result = proceedingJoinPoint.proceed();
+//        System.out.println("after method invocation");
+//
+//        return result;
+//    }
 }
